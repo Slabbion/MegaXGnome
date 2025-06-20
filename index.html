@@ -52,15 +52,29 @@
 
 <body class="bg-gray-900 text-white transition-colors duration-500">
 
-  <!-- Tab Navigation -->
-  <div class="flex justify-center space-x-2 mt-6">
-    <button onclick="showTab('orion')" class="tab-btn active-tab">🛰️ Orion</button>
-    <button onclick="showTab('nova')" class="tab-btn">🌌 Nova</button>
-    <button onclick="showTab('hex')" class="tab-btn">💠 Hex</button>
-    <button onclick="showTab('solis')" class="tab-btn">☀️ Solis</button>
-    <button onclick="showTab('vanta')" class="tab-btn">🌑 Vanta</button>
-    <button onclick="toggleTheme()" class="ml-4 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">🌓 Toggle</button>
-  </div>
+    <!-- Tab Navigation with Agent Images -->
+    <div class="flex justify-center space-x-2 mt-6">
+        <button onclick="showTab('orion')" class="tab-btn active-tab">
+            <img src="images/Agent Orion.png" alt="Orion" class="h-6 w-6 inline-block mr-1" /> Orion
+        </button>
+        <button onclick="showTab('nova')" class="tab-btn">
+            <img src="images/Agent Nova.png" alt="Nova" class="h-6 w-6 inline-block mr-1" /> Nova
+        </button>
+        <button onclick="showTab('hex')" class="tab-btn">
+            <img src="images/Agent Hex.png" alt="Hex" class="h-6 w-6 inline-block mr-1" /> Hex
+        </button>
+        <button onclick="showTab('solis')" class="tab-btn">
+            <img src="images/Agent Solis.png" alt="Solis" class="h-6 w-6 inline-block mr-1" /> Solis
+        </button>
+        <button onclick="showTab('vanta')" class="tab-btn">
+            <img src="images/Agent Vanta.png" alt="Vanta" class="h-6 w-6 inline-block mr-1" /> Vanta
+        </button>
+
+        <button onclick="toggleTheme()" class="ml-4 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">
+            🌓 Toggle
+        </button>
+    </div>
+
 
   <!-- Tab Content -->
   <div class="max-w-7xl mx-auto p-6">
