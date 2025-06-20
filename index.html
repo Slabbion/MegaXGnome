@@ -34,8 +34,9 @@
   <div class="w-full mt-6 px-2 flex justify-center">
     <div class="overflow-x-auto whitespace-nowrap">
       <div class="inline-flex space-x-2">
-        <button onclick="showTab('orion')" class="tab-btn active-tab flex-shrink-0">
-          <img src="images/Agent Orion.png" alt="Orion" class="h-6 w-6 inline-block mr-1" /> Orion
+        
+        <button onclick="showTab('zenith')" class="tab-btn active-tab flex-shrink-0">
+          <img src="images/Agent Zenith.png" alt="Zenith" class="h-6 w-6 inline-block mr-1" /> Zenith
         </button>
         <button onclick="showTab('nova')" class="tab-btn flex-shrink-0">
           <img src="images/Agent Nova.png" alt="Nova" class="h-6 w-6 inline-block mr-1" /> Nova
@@ -49,9 +50,10 @@
         <button onclick="showTab('vanta')" class="tab-btn flex-shrink-0">
           <img src="images/Agent Vanta.png" alt="Vanta" class="h-6 w-6 inline-block mr-1" /> Vanta
         </button>
-        <button onclick="showTab('zenith')" class="tab-btn flex-shrink-0">
-          <img src="images/Agent Zenith.png" alt="Zenith" class="h-6 w-6 inline-block mr-1" /> Zenith
+        <button onclick="showTab('orion')" class="tab-btn flex-shrink-0">
+          <img src="images/Agent Orion.png" alt="Orion" class="h-6 w-6 inline-block mr-1" /> Orion
         </button>
+        
         <button onclick="toggleTheme()" class="ml-4 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 flex-shrink-0">
           🌓 Toggle
         </button>
@@ -64,102 +66,91 @@
   <!-- Tab Content -->
   <div class="max-w-7xl mx-auto p-6">
 
-    <!-- 🛰️ ORION: Real-Time Ops -->
-    <div id="orion" class="tab-content theme-orion">
+    <!-- =================== ZENITH =================== -->
+    <div id="zenith" class="tab-content theme-zenith">
 
       <!-- Header -->
       <div class="flex items-center gap-4 mb-6 sparkle">
-        <img src="images/Agent Orion.png" alt="Agent Orion Portrait"
-          class="w-20 h-20 object-cover rounded-full border-2 border-yellow-400 shadow-lg" />
+        <img src="images/Agent Zenith.png" alt="Zenith Glyph"
+          class="w-20 h-20 object-cover rounded-full border-2 border-green-400 shadow-lg" />
         <div>
-          <h1 class="text-3xl font-bold text-yellow-400">🛰️ Agent Orion</h1>
-          <p class="text-yellow-200 italic text-sm mt-1">Real-time ops, market scans, and tactical execution.</p>
+          <h1 class="text-3xl font-bold text-green-400">🌠 Agent Zenith</h1>
+          <p class="text-gray-400 italic text-sm mt-1">Master Node — Synthesizing All Agent Knowledge.</p>
         </div>
       </div>
 
-      <!-- Glassy Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <!-- Synthesized Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="glass-card text-center">
-          <h3 class="text-yellow-300 text-sm mb-1">Total Opps</h3>
-          <div class="text-2xl font-bold text-green-400">{{ opp_count }}</div>
-        </div>
-        <div class="glass-card text-center">
-          <h3 class="text-yellow-300 text-sm mb-1">Avg Profit Margin</h3>
-          <div class="text-2xl font-bold text-blue-400">{{ avg_margin }}%</div>
+          <h3 class="text-green-300 text-sm mb-1">Nova Logs</h3>
+          <div class="text-2xl font-bold text-blue-200">3,274</div>
         </div>
         <div class="glass-card text-center">
-          <h3 class="text-yellow-300 text-sm mb-1">Max APY</h3>
-          <div class="text-2xl font-bold text-yellow-400">{{ max_apy }}%</div>
+          <h3 class="text-green-300 text-sm mb-1">Hex Reports</h3>
+          <div class="text-2xl font-bold text-indigo-300">32</div>
+        </div>
+        <div class="glass-card text-center">
+          <h3 class="text-green-300 text-sm mb-1">Vanta Reflections</h3>
+          <div class="text-2xl font-bold text-purple-200">87</div>
+        </div>
+        <div class="glass-card text-center">
+          <h3 class="text-green-300 text-sm mb-1">Solis Quotes Logged</h3>
+          <div class="text-2xl font-bold text-orange-300">14</div>
         </div>
       </div>
 
-      <!-- Filter Form -->
-      <form method="get" class="mb-6 flex flex-wrap gap-3 items-center">
-        <select name="platform" class="glass-input">
-          <option value="">All Platforms</option>
-          {% for p in ["polymarket"] %}
-          <option value="{{ p }}" {% if selected_platform == p %}selected{% endif %}>{{ p|capitalize }}</option>
-          {% endfor %}
-        </select>
-        <input type="text" name="match" placeholder="Match" value="{{ match }}" class="glass-input" />
-        <input type="number" step="0.1" name="min_apy" placeholder="Min APY" value="{{ min_apy }}" class="glass-input" />
-        <button type="submit" class="btn-glow-yellow">Filter</button>
-      </form>
-
-      <!-- Toggle Mode -->
-      <form method="post" action="/toggle_mode" class="mb-4">
-        <button class="btn-glow-yellow">⚙️ Toggle to {{ 'Live' if mode == 'dry-run' else 'Dry-run' }}</button>
-      </form>
-
-      <!-- Scan Form -->
-      <form id="scan-form" class="mb-6">
-        <button type="submit" class="btn-glow-green">🔄 Scan Markets</button>
-      </form>
-
-      <!-- Log Feed -->
-      <div class="glass-card overflow-y-auto max-h-64 font-mono text-green-400 text-sm border border-yellow-500/20 p-3 shadow-inner bg-black/40 mb-6" id="log-feed">
-        <div class="text-yellow-300 mb-1">📟 Orion Logs:</div>
-        <!-- Logs will populate here -->
+      <!-- Insight Box -->
+      <div
+        class="glass-card bg-gradient-to-br from-green-900/40 via-teal-800/30 to-transparent border border-green-400/20 shadow-md mb-6">
+        <h2 class="text-lg text-green-200 font-semibold mb-2">🌌 Synthesized Insight</h2>
+        <p class="text-green-100 text-sm">
+          Nova flagged anomaly Delta-Theta. Solis aligns with spiritual event. Vanta logged user introspection spike.
+          Recommend meditative halt and data archive.
+        </p>
       </div>
 
-      <!-- Chart -->
-      <div class="glass-card mb-6">
-        <h2 class="text-lg font-bold mb-3 text-yellow-200">📊 APY Over Time</h2>
-        <canvas id="apyChart" height="100"></canvas>
+      <!-- Cosmic Glyph -->
+      <div class="flex justify-center mb-6">
+        <img src="images/zenith-glyph.png" alt="Cosmic Glyph"
+          class="w-48 h-48 opacity-70 hover:opacity-100 transition duration-300" />
       </div>
 
-      <!-- Opportunities Table -->
-      <div class="overflow-x-auto glass-card border border-yellow-600/20 p-4">
-        <h2 class="text-yellow-300 font-semibold mb-3 text-lg">📈 Current Opportunities</h2>
-        <table class="min-w-full text-sm text-yellow-100">
-          <thead class="bg-yellow-900/30 text-yellow-200">
-            <tr>
-              <th class="px-3 py-2 text-left">Time</th>
-              <th class="px-3 py-2 text-left">Match</th>
-              <th class="px-3 py-2 text-left">Platform 1</th>
-              <th class="px-3 py-2 text-left">Platform 2</th>
-              <th class="px-3 py-2 text-left">Odds</th>
-              <th class="px-3 py-2 text-left">Profit %</th>
-              <th class="px-3 py-2 text-left">APY</th>
-            </tr>
-          </thead>
-          <tbody id="opportunities-table-body">
-            {% for opp in opportunities %}
-            <tr class="border-t border-yellow-700 hover:bg-yellow-900/20 transition">
-              <td class="px-3 py-2">{{ opp.timestamp }}</td>
-              <td class="px-3 py-2">{{ opp.match }}</td>
-              <td class="px-3 py-2">{{ opp.platform1 }}</td>
-              <td class="px-3 py-2">{{ opp.platform2 }}</td>
-              <td class="px-3 py-2">{{ opp.odds1 }} / {{ opp.odds2 }}</td>
-              <td class="px-3 py-2 text-green-400 font-bold">{{ opp.profit_margin }}%</td>
-              <td class="px-3 py-2 text-yellow-300">{{ opp.apy }}%</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <!-- Coming Soon -->
+      <div class="glass-card">
+        <h3 class="text-green-300 font-semibold text-lg mb-2">🧬 Agent Correlation Engine (Coming Soon)</h3>
+        <p class="text-green-100 text-sm">
+          This module will track cross-agent relationships, pattern clusters, and real-time signal harmony between Nova,
+          Hex, Vanta, Solis, and Orion.
+        </p>
+      </div>
+
+      <!-- =================== Zenith Floating Protocol Button =================== -->
+      <button id="zenith-protocol-btn"
+        class="fixed bottom-6 right-6 bg-green-800/30 border border-green-400/20 text-green-100 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:bg-green-700/40 transition z-50">
+        🧿 Zenith Protocol
+      </button>
+
+      <!-- =================== Zenith Protocol Modal =================== -->
+      <div id="zenith-protocol-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center">
+        <div class="glass-card max-w-xl w-full p-6 relative">
+
+          <!-- Close Button -->
+          <button onclick="closeZenithProtocol()"
+            class="absolute top-2 right-3 text-green-300 text-xl hover:text-green-100">✖</button>
+
+          <h2 class="text-2xl font-bold text-green-300 mb-3">🧠 Zenith Protocol</h2>
+          <textarea id="zenith-command-input" rows="4" class="w-full glass-input mb-4"
+            placeholder="Enter your protocol command here…"></textarea>
+          <button onclick="submitZenithCommand()" class="btn-glow-green w-full mb-4">🚀 Execute</button>
+
+          <div class="glass-card max-h-48 overflow-y-auto text-sm text-green-100" id="zenith-command-log">
+            <div class="mb-2 text-green-300">📝 Command Log:</div>
+            <ul id="zenith-log-list" class="space-y-1 list-disc list-inside text-green-200"></ul>
+          </div>
+        </div>
       </div>
     </div>
-
 
     <!-- 🌌 NOVA: Passive Observer -->
     <div id="nova" class="tab-content hidden theme-nova">
@@ -388,94 +379,101 @@
     </div>
 
 
-    <!-- =================== ZENITH =================== -->
-    <div id="zenith" class="tab-content hidden theme-zenith">
+    <!-- 🛰️ ORION: Real-Time Ops -->
+    <div id="orion" class="tab-content hidden theme-orion">
 
       <!-- Header -->
       <div class="flex items-center gap-4 mb-6 sparkle">
-        <img src="images/Agent Zenith.png" alt="Zenith Glyph"
-          class="w-20 h-20 object-cover rounded-full border-2 border-green-400 shadow-lg" />
+        <img src="images/Agent Orion.png" alt="Agent Orion Portrait"
+          class="w-20 h-20 object-cover rounded-full border-2 border-yellow-400 shadow-lg" />
         <div>
-          <h1 class="text-3xl font-bold text-green-400">🌠 Agent Zenith</h1>
-          <p class="text-gray-400 italic text-sm mt-1">Master Node — Synthesizing All Agent Knowledge.</p>
+          <h1 class="text-3xl font-bold text-yellow-400">🛰️ Agent Orion</h1>
+          <p class="text-yellow-200 italic text-sm mt-1">Real-time ops, market scans, and tactical execution.</p>
         </div>
       </div>
 
-      <!-- Synthesized Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <!-- Glassy Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="glass-card text-center">
-          <h3 class="text-green-300 text-sm mb-1">Nova Logs</h3>
-          <div class="text-2xl font-bold text-blue-200">3,274</div>
-        </div>
-        <div class="glass-card text-center">
-          <h3 class="text-green-300 text-sm mb-1">Hex Reports</h3>
-          <div class="text-2xl font-bold text-indigo-300">32</div>
+          <h3 class="text-yellow-300 text-sm mb-1">Total Opps</h3>
+          <div class="text-2xl font-bold text-green-400">{{ opp_count }}</div>
         </div>
         <div class="glass-card text-center">
-          <h3 class="text-green-300 text-sm mb-1">Vanta Reflections</h3>
-          <div class="text-2xl font-bold text-purple-200">87</div>
+          <h3 class="text-yellow-300 text-sm mb-1">Avg Profit Margin</h3>
+          <div class="text-2xl font-bold text-blue-400">{{ avg_margin }}%</div>
         </div>
         <div class="glass-card text-center">
-          <h3 class="text-green-300 text-sm mb-1">Solis Quotes Logged</h3>
-          <div class="text-2xl font-bold text-orange-300">14</div>
+          <h3 class="text-yellow-300 text-sm mb-1">Max APY</h3>
+          <div class="text-2xl font-bold text-yellow-400">{{ max_apy }}%</div>
         </div>
       </div>
 
-      <!-- Insight Box -->
-      <div
-        class="glass-card bg-gradient-to-br from-green-900/40 via-teal-800/30 to-transparent border border-green-400/20 shadow-md mb-6">
-        <h2 class="text-lg text-green-200 font-semibold mb-2">🌌 Synthesized Insight</h2>
-        <p class="text-green-100 text-sm">
-          Nova flagged anomaly Delta-Theta. Solis aligns with spiritual event. Vanta logged user introspection spike.
-          Recommend meditative halt and data archive.
-        </p>
+      <!-- Filter Form -->
+      <form method="get" class="mb-6 flex flex-wrap gap-3 items-center">
+        <select name="platform" class="glass-input">
+          <option value="">All Platforms</option>
+          {% for p in ["polymarket"] %}
+          <option value="{{ p }}" {% if selected_platform == p %}selected{% endif %}>{{ p|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="match" placeholder="Match" value="{{ match }}" class="glass-input" />
+        <input type="number" step="0.1" name="min_apy" placeholder="Min APY" value="{{ min_apy }}" class="glass-input" />
+        <button type="submit" class="btn-glow-yellow">Filter</button>
+      </form>
+
+      <!-- Toggle Mode -->
+      <form method="post" action="/toggle_mode" class="mb-4">
+        <button class="btn-glow-yellow">⚙️ Toggle to {{ 'Live' if mode == 'dry-run' else 'Dry-run' }}</button>
+      </form>
+
+      <!-- Scan Form -->
+      <form id="scan-form" class="mb-6">
+        <button type="submit" class="btn-glow-green">🔄 Scan Markets</button>
+      </form>
+
+      <!-- Log Feed -->
+      <div class="glass-card overflow-y-auto max-h-64 font-mono text-green-400 text-sm border border-yellow-500/20 p-3 shadow-inner bg-black/40 mb-6" id="log-feed">
+        <div class="text-yellow-300 mb-1">📟 Orion Logs:</div>
+        <!-- Logs will populate here -->
       </div>
 
-      <!-- Cosmic Glyph -->
-      <div class="flex justify-center mb-6">
-        <img src="images/zenith-glyph.png" alt="Cosmic Glyph"
-          class="w-48 h-48 opacity-70 hover:opacity-100 transition duration-300" />
+      <!-- Chart -->
+      <div class="glass-card mb-6">
+        <h2 class="text-lg font-bold mb-3 text-yellow-200">📊 APY Over Time</h2>
+        <canvas id="apyChart" height="100"></canvas>
       </div>
 
-      <!-- Coming Soon -->
-      <div class="glass-card">
-        <h3 class="text-green-300 font-semibold text-lg mb-2">🧬 Agent Correlation Engine (Coming Soon)</h3>
-        <p class="text-green-100 text-sm">
-          This module will track cross-agent relationships, pattern clusters, and real-time signal harmony between Nova,
-          Hex, Vanta, Solis, and Orion.
-        </p>
-      </div>
-
-      <!-- =================== Zenith Floating Protocol Button =================== -->
-      <button id="zenith-protocol-btn"
-        class="fixed bottom-6 right-6 bg-green-800/30 border border-green-400/20 text-green-100 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:bg-green-700/40 transition z-50">
-        🧿 Zenith Protocol
-      </button>
-
-      <!-- =================== Zenith Protocol Modal =================== -->
-      <div id="zenith-protocol-modal"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center">
-        <div class="glass-card max-w-xl w-full p-6 relative">
-
-          <!-- Close Button -->
-          <button onclick="closeZenithProtocol()"
-            class="absolute top-2 right-3 text-green-300 text-xl hover:text-green-100">✖</button>
-
-          <h2 class="text-2xl font-bold text-green-300 mb-3">🧠 Zenith Protocol</h2>
-          <textarea id="zenith-command-input" rows="4" class="w-full glass-input mb-4"
-            placeholder="Enter your protocol command here…"></textarea>
-          <button onclick="submitZenithCommand()" class="btn-glow-green w-full mb-4">🚀 Execute</button>
-
-          <div class="glass-card max-h-48 overflow-y-auto text-sm text-green-100" id="zenith-command-log">
-            <div class="mb-2 text-green-300">📝 Command Log:</div>
-            <ul id="zenith-log-list" class="space-y-1 list-disc list-inside text-green-200"></ul>
-          </div>
-        </div>
+      <!-- Opportunities Table -->
+      <div class="overflow-x-auto glass-card border border-yellow-600/20 p-4">
+        <h2 class="text-yellow-300 font-semibold mb-3 text-lg">📈 Current Opportunities</h2>
+        <table class="min-w-full text-sm text-yellow-100">
+          <thead class="bg-yellow-900/30 text-yellow-200">
+            <tr>
+              <th class="px-3 py-2 text-left">Time</th>
+              <th class="px-3 py-2 text-left">Match</th>
+              <th class="px-3 py-2 text-left">Platform 1</th>
+              <th class="px-3 py-2 text-left">Platform 2</th>
+              <th class="px-3 py-2 text-left">Odds</th>
+              <th class="px-3 py-2 text-left">Profit %</th>
+              <th class="px-3 py-2 text-left">APY</th>
+            </tr>
+          </thead>
+          <tbody id="opportunities-table-body">
+            {% for opp in opportunities %}
+            <tr class="border-t border-yellow-700 hover:bg-yellow-900/20 transition">
+              <td class="px-3 py-2">{{ opp.timestamp }}</td>
+              <td class="px-3 py-2">{{ opp.match }}</td>
+              <td class="px-3 py-2">{{ opp.platform1 }}</td>
+              <td class="px-3 py-2">{{ opp.platform2 }}</td>
+              <td class="px-3 py-2">{{ opp.odds1 }} / {{ opp.odds2 }}</td>
+              <td class="px-3 py-2 text-green-400 font-bold">{{ opp.profit_margin }}%</td>
+              <td class="px-3 py-2 text-yellow-300">{{ opp.apy }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
-
-
-
 
 
   </div>
