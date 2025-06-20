@@ -6,49 +6,7 @@
   <title>Slabbion Dashboards</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-  <style>
-    
-    body {
-      font-family: 'Montserrat', sans-serif;
-      transition: background 0.5s, color 0.5s;
-    }
-
-    .tab-btn {
-      @apply relative z-10 px-5 py-2 font-semibold bg-gray-800 text-white rounded-t-md transition-all duration-300;
-      clip-path: polygon(0% 100%, 0% 20%, 10% 0%, 90% 0%, 100% 20%, 100% 100%);
-    }
-
-    .tab-btn:not(.active-tab) {
-      opacity: 0.7;
-      transform: translateY(8px);
-    }
-
-    .active-tab {
-      @apply bg-yellow-500 text-black z-20 shadow-lg;
-    }
-
-    .tab-content {
-      animation: slideIn 0.4s ease-in-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    /* Accent themes */
-    .theme-orion h1 { @apply text-yellow-400; }
-    .theme-nova h1 { @apply text-blue-400; }
-    .theme-hex h1 { @apply text-indigo-400; }
-    .theme-solis h1 { @apply text-orange-400; }
-    .theme-vanta h1 { @apply text-purple-400; }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="bg-gray-900 text-white transition-colors duration-500">
@@ -70,6 +28,10 @@
         <button onclick="showTab('vanta')" class="tab-btn">
             <img src="images/Agent Vanta.png" alt="Vanta" class="h-6 w-6 inline-block mr-1" /> Vanta
         </button>
+        <!-- Zenith -->
+        <button onclick="showTab('zenith')" class="tab-btn">
+          <img src="images/Agent Zenith.png" alt="Zenith" class="h-6 w-6 inline-block mr-1" /> Zenith
+        </button>
 
         <button onclick="toggleTheme()" class="ml-4 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">
             🌓 Toggle
@@ -80,81 +42,88 @@
   <!-- Tab Content -->
   <div class="max-w-7xl mx-auto p-6">
 
-    <!-- ORION -->
-    <div id="orion" class="tab-content">
+    <!-- 🛰️ ORION: Real-Time Ops -->
+    <div id="orion" class="tab-content theme-orion">
 
-        <!-- Header with Portrait -->
-        <div class="flex items-center gap-4 mb-6">
-            <img src="images/Agent Orion.png" alt="Agent Orion Portrait" class="w-20 h-20 object-cover rounded-full border-2 border-yellow-400 shadow-lg" />
-            <div>
-                <h1 class="text-3xl font-bold text-yellow-400">🛰️ Orion Dashboard</h1>
-                <p class="text-yellow-200 italic text-sm mt-1">Real-time ops, market scans, and tactical execution.</p>
-            </div>
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-6 sparkle">
+        <img src="images/Agent Orion.png" alt="Agent Orion Portrait"
+          class="w-20 h-20 object-cover rounded-full border-2 border-yellow-400 shadow-lg" />
+        <div>
+          <h1 class="text-3xl font-bold text-yellow-400">🛰️ Agent Orion</h1>
+          <p class="text-yellow-200 italic text-sm mt-1">Real-time ops, market scans, and tactical execution.</p>
         </div>
+      </div>
 
-
+      <!-- Glassy Stats -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-gray-800 p-4 rounded shadow">
-          <div class="text-sm text-gray-400">Total Opps</div>
+        <div class="glass-card text-center">
+          <h3 class="text-yellow-300 text-sm mb-1">Total Opps</h3>
           <div class="text-2xl font-bold text-green-400">{{ opp_count }}</div>
         </div>
-        <div class="bg-gray-800 p-4 rounded shadow">
-          <div class="text-sm text-gray-400">Avg Profit Margin</div>
+        <div class="glass-card text-center">
+          <h3 class="text-yellow-300 text-sm mb-1">Avg Profit Margin</h3>
           <div class="text-2xl font-bold text-blue-400">{{ avg_margin }}%</div>
         </div>
-        <div class="bg-gray-800 p-4 rounded shadow">
-          <div class="text-sm text-gray-400">Max APY</div>
+        <div class="glass-card text-center">
+          <h3 class="text-yellow-300 text-sm mb-1">Max APY</h3>
           <div class="text-2xl font-bold text-yellow-400">{{ max_apy }}%</div>
         </div>
       </div>
 
+      <!-- Filter Form -->
       <form method="get" class="mb-6 flex flex-wrap gap-3 items-center">
-        <select name="platform" class="bg-gray-800 text-white px-3 py-2 rounded">
+        <select name="platform" class="glass-input">
           <option value="">All Platforms</option>
           {% for p in ["polymarket"] %}
           <option value="{{ p }}" {% if selected_platform == p %}selected{% endif %}>{{ p|capitalize }}</option>
           {% endfor %}
         </select>
-        <input type="text" name="match" placeholder="Match" value="{{ match }}" class="px-3 py-2 bg-gray-800 text-white rounded" />
-        <input type="number" step="0.1" name="min_apy" placeholder="Min APY" value="{{ min_apy }}" class="px-3 py-2 bg-gray-800 text-white rounded" />
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Filter</button>
+        <input type="text" name="match" placeholder="Match" value="{{ match }}" class="glass-input" />
+        <input type="number" step="0.1" name="min_apy" placeholder="Min APY" value="{{ min_apy }}" class="glass-input" />
+        <button type="submit" class="btn-glow-yellow">Filter</button>
       </form>
 
+      <!-- Toggle Mode -->
       <form method="post" action="/toggle_mode" class="mb-4">
-        <button class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
-          Toggle to {{ 'Live' if mode == 'dry-run' else 'Dry-run' }}
-        </button>
+        <button class="btn-glow-yellow">⚙️ Toggle to {{ 'Live' if mode == 'dry-run' else 'Dry-run' }}</button>
       </form>
 
+      <!-- Scan Form -->
       <form id="scan-form" class="mb-6">
-        <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">🔄 Scan Markets</button>
+        <button type="submit" class="btn-glow-green">🔄 Scan Markets</button>
       </form>
 
-      <div class="bg-black text-green-400 font-mono p-4 rounded mb-6 max-h-64 overflow-y-auto text-sm" id="log-feed">
-        <div class="text-gray-400 mb-1">📟 Orion Logs:</div>
+      <!-- Log Feed -->
+      <div class="glass-card overflow-y-auto max-h-64 font-mono text-green-400 text-sm border border-yellow-500/20 p-3 shadow-inner bg-black/40 mb-6" id="log-feed">
+        <div class="text-yellow-300 mb-1">📟 Orion Logs:</div>
+        <!-- Logs will populate here -->
       </div>
 
-      <div class="bg-gray-800 p-4 rounded mb-6">
-        <h2 class="text-lg font-bold mb-3">📊 APY Over Time</h2>
+      <!-- Chart -->
+      <div class="glass-card mb-6">
+        <h2 class="text-lg font-bold mb-3 text-yellow-200">📊 APY Over Time</h2>
         <canvas id="apyChart" height="100"></canvas>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm border border-gray-700">
-          <thead class="bg-gray-800 text-gray-300">
+      <!-- Opportunities Table -->
+      <div class="overflow-x-auto glass-card border border-yellow-600/20 p-4">
+        <h2 class="text-yellow-300 font-semibold mb-3 text-lg">📈 Current Opportunities</h2>
+        <table class="min-w-full text-sm text-yellow-100">
+          <thead class="bg-yellow-900/30 text-yellow-200">
             <tr>
-              <th class="px-3 py-2">Time</th>
-              <th class="px-3 py-2">Match</th>
-              <th class="px-3 py-2">Platform 1</th>
-              <th class="px-3 py-2">Platform 2</th>
-              <th class="px-3 py-2">Odds</th>
-              <th class="px-3 py-2">Profit %</th>
-              <th class="px-3 py-2">APY</th>
+              <th class="px-3 py-2 text-left">Time</th>
+              <th class="px-3 py-2 text-left">Match</th>
+              <th class="px-3 py-2 text-left">Platform 1</th>
+              <th class="px-3 py-2 text-left">Platform 2</th>
+              <th class="px-3 py-2 text-left">Odds</th>
+              <th class="px-3 py-2 text-left">Profit %</th>
+              <th class="px-3 py-2 text-left">APY</th>
             </tr>
           </thead>
           <tbody id="opportunities-table-body">
             {% for opp in opportunities %}
-            <tr class="border-t border-gray-700 hover:bg-gray-800">
+            <tr class="border-t border-yellow-700 hover:bg-yellow-900/20 transition">
               <td class="px-3 py-2">{{ opp.timestamp }}</td>
               <td class="px-3 py-2">{{ opp.match }}</td>
               <td class="px-3 py-2">{{ opp.platform1 }}</td>
@@ -169,334 +138,328 @@
       </div>
     </div>
 
-    <!-- NOVA -->
-    <div id="nova" class="tab-content hidden">
 
-        <!-- Header with Portrait -->
-        <div class="flex items-center gap-4 mb-6">
-            <img src="images/Agent Nova.png" alt="Agent Nova Portrait" class="w-20 h-20 object-cover rounded-full border-2 border-blue-400 shadow-lg" />
-            <div>
-            <h1 class="text-3xl font-bold text-blue-400">🌌 Agent Nova</h1>
-            <p class="text-gray-400 italic text-sm mt-1">Observes. Logs. Reports.</p>
-            </div>
+    <!-- 🌌 NOVA: Passive Observer -->
+    <div id="nova" class="tab-content hidden theme-nova">
+
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-6 sparkle">
+        <img src="images/Agent Nova.png" alt="Agent Nova Portrait"
+          class="w-20 h-20 object-cover rounded-full border-2 border-blue-400 shadow-lg" />
+        <div>
+          <h1 class="text-3xl font-bold text-blue-400">🌌 Agent Nova</h1>
+          <p class="text-blue-300 italic text-sm mt-1">Observes. Logs. Reports.</p>
         </div>
+      </div>
 
-        <!-- Nova Description -->
-        <p class="text-gray-400 mb-6 italic">
-            Logs everything: messages, price actions, command triggers, and anomalies. Designed to observe, record, and report without bias.
+      <!-- Description -->
+      <p class="text-blue-200 mb-6 italic">
+        Logs everything: messages, price actions, command triggers, and anomalies. Designed to observe, record, and report without bias.
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="glass-card text-center">
+          <h3 class="text-blue-300 text-sm mb-1">Total Logs</h3>
+          <div class="text-2xl font-bold text-blue-200">3,274</div>
+        </div>
+        <div class="glass-card text-center">
+          <h3 class="text-blue-300 text-sm mb-1">Anomalies Detected</h3>
+          <div class="text-2xl font-bold text-red-400">17</div>
+        </div>
+        <div class="glass-card text-center">
+          <h3 class="text-blue-300 text-sm mb-1">Triggers Observed</h3>
+          <div class="text-2xl font-bold text-teal-300">89</div>
+        </div>
+      </div>
+
+      <!-- Log Feed -->
+      <div
+        class="glass-card bg-gradient-to-br from-blue-900/40 via-black/40 to-transparent backdrop-blur-sm p-4 mb-6 font-mono text-sm text-blue-300 max-h-64 overflow-y-auto border border-blue-800 shadow-inner"
+        id="nova-log-feed">
+        <div class="text-blue-400 mb-2">📘 Nova Log Stream:</div>
+        <ul class="space-y-1" id="nova-logs">
+          <li>[00:01:12] 🛰 Command received: `scan_all`</li>
+          <li>[00:01:14] ✅ Task completed. 21 entries recorded.</li>
+          <li>[00:01:18] ⚠️ Price deviation detected: Market ID #842</li>
+          <li>[00:01:21] 📦 Data packet synced to archive.</li>
+          <li>[00:01:30] 🌀 Anomaly pattern matched: Delta-Theta Curve</li>
+        </ul>
+      </div>
+
+      <!-- Report Upload -->
+      <div class="glass-card bg-gradient-to-br from-blue-900/30 to-transparent backdrop-blur-sm p-4 shadow">
+        <h2 class="text-lg font-semibold text-blue-200 mb-3">📤 Submit New Report</h2>
+        <form id="nova-report-form" class="flex flex-col gap-3">
+          <input type="text" placeholder="Log Title"
+            class="bg-blue-900/40 border border-blue-700 text-white px-3 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <textarea placeholder="Describe anomaly, observation or trigger..." rows="4"
+            class="bg-blue-900/40 border border-blue-700 text-white px-3 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded text-white shadow-md">🚀 Upload</button>
+        </form>
+      </div>
+
+    </div>
+
+
+    <!-- 💠 HEX: Data Pattern Analysis -->
+    <div id="hex" class="tab-content hidden theme-hex">
+
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-6">
+        <img src="images/Agent Hex.png" alt="Agent Hex Portrait"
+          class="w-20 h-20 object-cover rounded-full border-2 border-cyan-400 shadow-lg" />
+        <div>
+          <h1 class="text-3xl font-bold text-cyan-300">💠 Agent Hex</h1>
+          <p class="text-cyan-200 italic text-sm mt-1">Data in. Signals out. Hex sees patterns where others don’t.</p>
+        </div>
+      </div>
+
+      <!-- Scan Button -->
+      <button onclick="scanNews()"
+        class="bg-cyan-700 hover:bg-cyan-800 transition text-white font-semibold px-4 py-2 rounded shadow mb-6">
+        🛰️ Scan Latest News
+      </button>
+
+      <!-- News Feed Grid -->
+      <div id="news-feed"
+        class="grid md:grid-cols-2 gap-4 mb-8 transition-all duration-300">
+        <!-- Articles injected here via JS -->
+      </div>
+
+      <!-- Pinned Headlines Section -->
+      <div
+        class="glass-card bg-gradient-to-br from-cyan-900/30 via-indigo-900/20 to-transparent border border-cyan-400/20 backdrop-blur-md p-4 rounded-lg shadow">
+        <h2 class="text-lg font-semibold text-cyan-300 mb-2">📌 Pinned Headlines</h2>
+        <ul id="pinned-articles"
+          class="text-cyan-100 text-sm list-disc list-inside space-y-1 max-h-40 overflow-y-auto pr-2">
+          <!-- Pinned articles appear here -->
+        </ul>
+      </div>
+
+    </div>
+
+
+    <!-- ☀️ SOLIS: Illumination & Reflection -->
+    <div id="solis" class="tab-content hidden theme-solis">
+
+      <!-- Header with Portrait -->
+      <div class="flex items-center gap-4 mb-6">
+        <img src="images/Agent Solis.png" alt="Agent Solis Portrait"
+          class="w-20 h-20 object-cover rounded-full border-2 border-orange-400 shadow-lg" />
+        <div>
+          <h1 class="text-3xl font-bold text-orange-300">☀️ Agent Solis</h1>
+          <p class="text-orange-200 italic text-sm mt-1">Illuminates with sacred wisdom and timeless truths.</p>
+        </div>
+      </div>
+
+      <!-- Daily Quote -->
+      <div
+        class="glass-card bg-gradient-to-br from-yellow-100/10 via-orange-300/10 to-transparent border border-orange-400/20 backdrop-blur-md shadow-lg mb-6">
+        <h2 class="text-xl font-semibold text-orange-300 mb-2">📜 Today's Insight</h2>
+        <blockquote id="solis-quote" class="italic text-orange-100 text-lg">
+          “In the beginning was the Word… — John 1:1”
+        </blockquote>
+      </div>
+
+      <button onclick="getSolisQuote()"
+        class="bg-orange-600 hover:bg-orange-700 transition text-white font-semibold px-4 py-2 rounded shadow mb-6">
+        🔄 New Quote
+      </button>
+
+      <!-- Mystical Archives -->
+      <div
+        class="glass-card bg-orange-900/20 backdrop-blur-sm border border-orange-500/30 rounded-lg shadow-md mb-6">
+        <h3 class="text-lg font-semibold text-orange-300 mb-2">🧙‍♂️ Mystical Archives</h3>
+        <p class="text-orange-100 text-sm">
+          Future archive of sacred texts, filtered by theme or origin (Bible, Hermetic, Sufi, etc.).
         </p>
+      </div>
 
-        <!-- Nova Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-gray-800/80 backdrop-blur-sm p-4 rounded shadow">
-            <div class="text-sm text-gray-400">Total Logs</div>
-            <div class="text-2xl font-bold text-blue-300">3,274</div>
-            </div>
-            <div class="bg-gray-800/80 backdrop-blur-sm p-4 rounded shadow">
-            <div class="text-sm text-gray-400">Anomalies Detected</div>
-            <div class="text-2xl font-bold text-red-400">17</div>
-            </div>
-            <div class="bg-gray-800/80 backdrop-blur-sm p-4 rounded shadow">
-            <div class="text-sm text-gray-400">Triggers Observed</div>
-            <div class="text-2xl font-bold text-teal-400">89</div>
-            </div>
-        </div>
+      <!-- Daily Contemplation Log -->
+      <div
+        class="glass-card bg-orange-900/20 backdrop-blur-sm border border-orange-500/30 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-orange-300 mb-3">✨ Daily Contemplation Log</h3>
 
-        <!-- Nova Log Feed -->
-        <div class="bg-black bg-opacity-60 p-4 rounded mb-6 font-mono text-sm text-blue-300 max-h-64 overflow-y-auto shadow-inner border border-blue-800" id="nova-log-feed">
-            <div class="text-blue-500 mb-2">📘 Nova Log Stream:</div>
-            <ul class="space-y-1" id="nova-logs">
-            <li>[00:01:12] 🛰 Command received: `scan_all`</li>
-            <li>[00:01:14] ✅ Task completed. 21 entries recorded.</li>
-            <li>[00:01:18] ⚠️ Price deviation detected: Market ID #842</li>
-            <li>[00:01:21] 📦 Data packet synced to archive.</li>
-            <li>[00:01:30] 🌀 Anomaly pattern matched: Delta-Theta Curve</li>
-            </ul>
-        </div>
+        <!-- Email Input -->
+        <input id="solis-email" type="email"
+          class="w-full bg-orange-950/30 text-orange-100 p-3 rounded shadow-inner mb-3 placeholder-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          placeholder="Enter your email to receive this reflection…" />
 
-        <!-- Nova Report Upload -->
-        <div class="bg-gray-800/70 p-4 rounded shadow">
-            <h2 class="text-lg font-semibold text-blue-200 mb-3">📤 Submit New Report</h2>
-            <form id="nova-report-form" class="flex flex-col gap-3">
-            <input type="text" placeholder="Log Title" class="bg-gray-900 px-3 py-2 rounded text-white placeholder-gray-500" />
-            <textarea placeholder="Describe anomaly, observation or trigger..." rows="4" class="bg-gray-900 px-3 py-2 rounded text-white placeholder-gray-500"></textarea>
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">Upload</button>
-            </form>
-        </div>
+        <!-- Reflection Textarea -->
+        <textarea id="solis-entry" rows="4"
+          class="w-full bg-orange-950/30 text-orange-100 p-3 rounded shadow-inner placeholder-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 mb-3"
+          placeholder="Write your reflection…"></textarea>
 
-    </div>
-
-    <!-- HEX -->
-    <div id="hex" class="tab-content hidden">
-        
-        <!-- Header with Portrait -->
-        <div class="flex items-center gap-4 mb-6">
-            <img src="images/Agent Hex.png" alt="Agent Hex Portrait" class="w-20 h-20 object-cover rounded-full border-2 border-cyan-400 shadow-lg" />
-            <div>
-                <h1 class="text-3xl font-bold text-cyan-300">💠 Hex Dashboard</h1>
-                <p class="text-cyan-200 italic text-sm mt-1">Data in. Signals out. Hex sees patterns where others don’t.</p>
-            </div>
-        </div>
-
-        <!-- Scan News Button -->
-        <button onclick="scanNews()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded transition mb-6">
-            🛰️ Scan Latest News
+        <!-- Submit Button -->
+        <button onclick="saveEntryAndEmail()"
+          class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded transition shadow-md">
+          💬 Send Reflection
         </button>
 
-        <!-- News Feed -->
-        <div id="news-feed" class="grid md:grid-cols-2 gap-4 mb-8">
-            <!-- News articles will populate here -->
-        </div>
+        <!-- Displayed Reflections -->
+        <ul id="solis-entries"
+          class="mt-4 list-disc list-inside text-orange-200 text-sm max-h-32 overflow-y-auto space-y-1 pr-2">
+          <!-- User entries will appear here -->
+        </ul>
+      </div>
 
-        <!-- Pinned Articles -->
-        <div class="bg-indigo-900/30 border border-indigo-400/20 backdrop-blur-md p-4 rounded-lg">
-            <h2 class="text-lg font-semibold text-indigo-300 mb-2">📌 Pinned Headlines</h2>
-            <ul id="pinned-articles" class="text-indigo-100 text-sm list-disc list-inside space-y-1 max-h-40 overflow-y-auto"></ul>
-        </div>
-
-        <!-- Hex Intelligence Script -->
-        <script>
-            const sampleNews = [
-            { title: "AI Beats Humans in New Math Challenge", category: "Tech" },
-            { title: "Markets Surge as Inflation Slows", category: "Finance" },
-            { title: "New Protests Erupt in Major City", category: "World" },
-            { title: "Quantum Breakthrough May Revolutionize Computing", category: "Science" },
-            { title: "Cybersecurity Threat Level Raised Globally", category: "Security" },
-            { title: "UN Holds Emergency Climate Talks", category: "Environment" },
-            { title: "Rare Planetary Alignment This Week", category: "Space" },
-            { title: "Massive Data Breach Hits Financial Firm", category: "Cyber" },
-            ];
-
-            function scanNews() {
-            const newsFeed = document.getElementById("news-feed");
-            newsFeed.innerHTML = ""; // Clear previous results
-
-            sampleNews.forEach((article, index) => {
-                const card = document.createElement("div");
-                card.className = "bg-indigo-800/30 border border-indigo-400/10 backdrop-blur-sm p-4 rounded-lg shadow transition hover:bg-indigo-800/50";
-                card.innerHTML = `
-                <h3 class="font-semibold text-indigo-100 mb-1">📰 ${article.title}</h3>
-                <p class="text-indigo-300 text-sm mb-2">Category: ${article.category}</p>
-                <button onclick="pinArticle('${article.title.replace(/'/g, "\\'")}')" 
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 rounded">
-                    📌 Pin
-                </button>
-                `;
-                newsFeed.appendChild(card);
-            });
-            }
-
-            function pinArticle(title) {
-            const list = document.getElementById("pinned-articles");
-            const item = document.createElement("li");
-            item.textContent = title;
-            list.appendChild(item);
-            }
-        </script>
     </div>
 
-    <!-- SOLIS -->
-    <div id="solis" class="tab-content hidden">
 
-        <!-- Header with Portrait -->
-        <div class="flex items-center gap-4 mb-6">
-            <img src="images/Agent Solis.png" alt="Agent Solis Portrait" class="w-20 h-20 object-cover rounded-full border-2 border-orange-400 shadow-lg" />
-            <div>
-                <h1 class="text-3xl font-bold text-orange-300">☀️ Solis Dashboard</h1>
-                <p class="text-orange-200 italic text-sm mt-1">Illuminates with sacred wisdom and timeless truths.</p>
-            </div>
+    <!-- 🌑 VANTA: Private Companion Agent -->
+    <div id="vanta" class="tab-content hidden theme-vanta">
+
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-6">
+        <img src="images/Agent Vanta.png" alt="Agent Vanta Portrait"
+          class="w-20 h-20 object-cover rounded-full border-2 border-purple-500 shadow-lg" />
+        <div>
+          <h1 class="text-3xl font-bold text-purple-400">🌑 Agent Vanta</h1>
+          <p class="text-purple-300 italic text-sm mt-1">Private. Secure. Your space for reflection and release.</p>
         </div>
+      </div>
 
-        <!-- Daily Quote -->
-        <div class="bg-gradient-to-br from-yellow-100/10 via-orange-200/10 to-transparent border border-orange-300/20 rounded-xl p-6 backdrop-blur-md shadow-md mb-6">
-            <h2 class="text-xl font-semibold text-orange-300 mb-2">📜 Today's Insight</h2>
-            <blockquote id="solis-quote" class="italic text-orange-100 text-lg">
-            “In the beginning was the Word… — John 1:1”
-            </blockquote>
-        </div>
+      <!-- Whisper Box -->
+      <div
+        class="glass-card bg-gradient-to-br from-purple-900/30 via-purple-800/20 to-transparent border border-purple-400/20 rounded-xl backdrop-blur-md shadow-lg mb-6">
 
-        <button onclick="getSolisQuote()" class="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded transition mb-6">
-            🔄 New Quote
+        <h2 class="text-xl font-semibold text-purple-200 mb-3">💬 Whisper to Vanta</h2>
+
+        <textarea id="vanta-entry" rows="4"
+          class="w-full bg-purple-950/40 text-purple-100 p-3 rounded resize-none shadow-inner placeholder-purple-400 transition focus:outline-none focus:ring-2 focus:ring-purple-500"
+          placeholder="Speak your mind privately... (thoughts, emotions, dreams, fears)"></textarea>
+
+        <input type="email" id="vanta-email"
+          class="w-full bg-purple-950/40 text-purple-100 p-3 rounded mt-3 shadow-inner placeholder-purple-400 transition focus:outline-none focus:ring-2 focus:ring-purple-500"
+          placeholder="Optional: enter your email for a private copy..." />
+
+        <button onclick="saveVantaEntry()"
+          class="mt-4 w-full bg-purple-700 hover:bg-purple-800 transition text-white font-semibold px-4 py-2 rounded shadow-md hover:shadow-lg">
+          🕊️ Submit Whisper
         </button>
 
-        <!-- Archives -->
-        <div class="bg-orange-900/20 backdrop-blur-sm border border-orange-500/30 p-4 rounded-lg mb-6">
-            <h3 class="text-lg font-semibold text-orange-300 mb-2">🧙‍♂️ Mystical Archives</h3>
-            <p class="text-orange-100 text-sm">
-            Future archive of sacred texts, filtered by theme or origin (Bible, Hermetic, Sufi, etc.).
-            </p>
-        </div>
+        <p id="vanta-confirmation" class="mt-3 text-purple-300 text-sm hidden">🖤 Entry saved. You're not alone.</p>
+      </div>
 
-        <!-- Reflection Entry -->
-        <div class="bg-orange-900/20 backdrop-blur-sm border border-orange-500/30 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold text-orange-300 mb-2">✨ Daily Contemplation Log</h3>
+      <!-- Memory Vault -->
+      <div
+        class="glass-card bg-purple-950/30 border border-purple-400/30 rounded-xl shadow-inner backdrop-blur-md mb-6">
+        <h3 class="text-lg font-semibold text-purple-200 mb-2">🧠 Private Memory Vault</h3>
+        <p class="text-purple-400 text-xs italic mb-3">These are your personal reflections, stored with care.</p>
+        <ul id="vanta-entries"
+          class="list-disc list-inside text-purple-100 text-sm max-h-48 overflow-y-auto pr-2 space-y-1">
+          <!-- Reflections populate here -->
+        </ul>
+      </div>
 
-            <!-- Email Field -->
-            <input id="solis-email" type="email" class="w-full bg-orange-900/40 text-orange-100 p-3 rounded mb-3" placeholder="Enter your email to receive this reflection…" />
+      <!-- Coming Feature -->
+      <div
+        class="glass-card bg-gradient-to-br from-purple-900/20 to-transparent border border-purple-400/20 backdrop-blur-md shadow-md">
+        <h3 class="text-md font-semibold text-purple-300 mb-1">🔒 Emotional Sync AI (Coming Soon)</h3>
+        <p class="text-purple-100 text-sm">
+          Vanta will soon be able to recognize emotional tone, trigger auto-insights, and suggest reflective prompts based on mood shifts.
+        </p>
+      </div>
 
-            <!-- Textarea -->
-            <textarea id="solis-entry" rows="4" class="w-full bg-orange-900/40 text-orange-100 p-3 rounded mb-3"
-            placeholder="Write your reflection…"></textarea>
-
-            <button onclick="saveEntryAndEmail()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded transition">
-            💬 Send Reflection
-            </button>
-
-            <ul id="solis-entries" class="mt-4 list-disc list-inside text-orange-200 text-sm max-h-32 overflow-y-auto"></ul>
-        </div>
-
-        <script>
-            const solisQuotes = [
-                "“The light shines in the darkness…” — John 1:5",
-                "“To everything there is a season…” — Ecclesiastes 3:1",
-                "“As above, so below.” — Hermetic Texts",
-                "“Let there be light.” — Genesis 1:3",
-                "“He who knows others is wise…” — Lao Tzu",
-                "“You are the light of the world…” — Matthew 5:14",
-                "“The lips of wisdom are closed…” — The Kybalion",
-                "“With Him are wisdom and strength…” — Job 12:13",
-                "“Be still, and know that I am God.” — Psalm 46:10",
-                "“I am the Alpha and the Omega…” — Revelation 1:8"
-            ];
-
-            function getSolisQuote() {
-                fetch('https://type.fit/api/quotes')
-                .then(res => res.json())
-                .then(data => {
-                    const q = data[Math.floor(Math.random() * data.length)];
-                    document.getElementById("solis-quote").textContent = `“${q.text}” — ${q.author || 'Unknown'}`;
-                })
-                .catch(() => {
-                    const quote = solisQuotes[Math.floor(Math.random() * solisQuotes.length)];
-                    document.getElementById("solis-quote").textContent = quote;
-                });
-            }
-
-            function saveEntryAndEmail() {
-                const email = document.getElementById("solis-email").value.trim();
-                const text = document.getElementById("solis-entry").value.trim();
-                if (!text || !email) {
-                alert("Please enter both your reflection and email.");
-                return;
-                }
-
-                // Show in local UI
-                const list = document.getElementById("solis-entries");
-                const li = document.createElement("li");
-                li.textContent = text;
-                list.prepend(li);
-
-                // Reset input
-                document.getElementById("solis-entry").value = "";
-
-                // Send to backend email service
-                fetch("/send_solis_email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: email, message: text })
-                })
-                .then(res => res.json())
-                .then(data => {
-                if (data.status === "success") {
-                    alert("🧡 Reflection sent to your inbox.");
-                } else {
-                    alert("⚠️ Failed to send. Please try again.");
-                }
-                })
-                .catch(err => {
-                console.error(err);
-                alert("⚠️ Server error. Try again later.");
-                });
-            }
-        </script>
     </div>
 
-    <!-- VANTA -->
-    <div id="vanta" class="tab-content hidden">
 
-        <!-- Header with Portrait -->
-        <div class="flex items-center gap-4 mb-6">
-            <img src="images/Agent Vanta.png" alt="Agent Vanta Portrait" class="w-20 h-20 object-cover rounded-full border-2 border-purple-500 shadow-lg" />
-            <div>
-                <h1 class="text-3xl font-bold text-purple-400">🌑 Vanta Dashboard</h1>
-                <p class="text-purple-200 italic text-sm mt-1">Private. Secure. Your space for reflection and release.</p>
-            </div>
+    <!-- =================== ZENITH =================== -->
+    <div id="zenith" class="tab-content hidden theme-zenith">
+
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-6 sparkle">
+        <img src="images/Agent Zenith.png" alt="Zenith Glyph"
+          class="w-20 h-20 object-cover rounded-full border-2 border-green-400 shadow-lg" />
+        <div>
+          <h1 class="text-3xl font-bold text-green-400">🌠 Agent Zenith</h1>
+          <p class="text-gray-400 italic text-sm mt-1">Master Node — Synthesizing All Agent Knowledge.</p>
         </div>
+      </div>
 
-        <!-- Whisper Box -->
-        <div class="bg-gradient-to-br from-purple-900/20 via-purple-800/10 to-transparent border border-purple-400/20 rounded-xl p-6 backdrop-blur-md shadow-md mb-6">
-            <h2 class="text-xl font-semibold text-purple-300 mb-2">💬 Whisper to Vanta</h2>
-            <textarea id="vanta-entry" rows="4" class="w-full bg-purple-950/40 text-purple-100 p-3 rounded mb-3"
-            placeholder="Speak your mind privately... (e.g. your thoughts, emotions, dreams, fears)"></textarea>
-            <input type="email" id="vanta-email" class="w-full bg-purple-950/40 text-purple-100 p-3 rounded mb-3"
-            placeholder="Optional: enter your email to receive this entry" />
-            <button onclick="saveVantaEntry()" class="bg-purple-700 hover:bg-purple-800 text-white font-semibold px-4 py-2 rounded transition">
-            🕊️ Submit Whisper
-            </button>
-            <p id="vanta-confirmation" class="mt-3 text-purple-300 text-sm hidden">🖤 Entry saved. You're not alone.</p>
+      <!-- Synthesized Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="glass-card text-center">
+          <h3 class="text-green-300 text-sm mb-1">Nova Logs</h3>
+          <div class="text-2xl font-bold text-blue-200">3,274</div>
         </div>
-
-        <!-- Memory Vault -->
-        <div class="bg-purple-900/20 backdrop-blur-sm border border-purple-400/30 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold text-purple-300 mb-2">🧠 Private Memory Vault</h3>
-            <ul id="vanta-entries" class="list-disc list-inside text-purple-200 text-sm max-h-40 overflow-y-auto"></ul>
+        <div class="glass-card text-center">
+          <h3 class="text-green-300 text-sm mb-1">Hex Reports</h3>
+          <div class="text-2xl font-bold text-indigo-300">32</div>
         </div>
+        <div class="glass-card text-center">
+          <h3 class="text-green-300 text-sm mb-1">Vanta Reflections</h3>
+          <div class="text-2xl font-bold text-purple-200">87</div>
+        </div>
+        <div class="glass-card text-center">
+          <h3 class="text-green-300 text-sm mb-1">Solis Quotes Logged</h3>
+          <div class="text-2xl font-bold text-orange-300">14</div>
+        </div>
+      </div>
 
-        <!-- Vanta Script -->
-        <script>
-            function saveVantaEntry() {
-            const entry = document.getElementById("vanta-entry").value.trim();
-            const email = document.getElementById("vanta-email").value.trim();
-            const list = document.getElementById("vanta-entries");
-            const confirm = document.getElementById("vanta-confirmation");
+      <!-- Insight Box -->
+      <div
+        class="glass-card bg-gradient-to-br from-green-900/40 via-teal-800/30 to-transparent border border-green-400/20 shadow-md mb-6">
+        <h2 class="text-lg text-green-200 font-semibold mb-2">🌌 Synthesized Insight</h2>
+        <p class="text-green-100 text-sm">
+          Nova flagged anomaly Delta-Theta. Solis aligns with spiritual event. Vanta logged user introspection spike.
+          Recommend meditative halt and data archive.
+        </p>
+      </div>
 
-            if (!entry) return;
+      <!-- Cosmic Glyph -->
+      <div class="flex justify-center mb-6">
+        <img src="images/zenith-glyph.png" alt="Cosmic Glyph"
+          class="w-48 h-48 opacity-70 hover:opacity-100 transition duration-300" />
+      </div>
 
-            // Add entry to vault list
-            const li = document.createElement("li");
-            li.textContent = entry;
-            list.prepend(li);
+      <!-- Coming Soon -->
+      <div class="glass-card">
+        <h3 class="text-green-300 font-semibold text-lg mb-2">🧬 Agent Correlation Engine (Coming Soon)</h3>
+        <p class="text-green-100 text-sm">
+          This module will track cross-agent relationships, pattern clusters, and real-time signal harmony between Nova,
+          Hex, Vanta, Solis, and Orion.
+        </p>
+      </div>
 
-            // Reset form
-            document.getElementById("vanta-entry").value = "";
-            document.getElementById("vanta-email").value = "";
+      <!-- =================== Zenith Floating Protocol Button =================== -->
+      <button id="zenith-protocol-btn"
+        class="fixed bottom-6 right-6 bg-green-800/30 border border-green-400/20 text-green-100 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:bg-green-700/40 transition z-50">
+        🧿 Zenith Protocol
+      </button>
 
-            // Show confirmation
-            confirm.classList.remove("hidden");
+      <!-- =================== Zenith Protocol Modal =================== -->
+      <div id="zenith-protocol-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center">
+        <div class="glass-card max-w-xl w-full p-6 relative">
 
-            // Optional: Email entry (backend must handle POST to /send_vanta_entry)
-            if (email) {
-                fetch("/send_vanta_entry", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ entry: entry, email: email })
-                }).catch(console.error);
-            }
+          <!-- Close Button -->
+          <button onclick="closeZenithProtocol()"
+            class="absolute top-2 right-3 text-green-300 text-xl hover:text-green-100">✖</button>
 
-            setTimeout(() => confirm.classList.add("hidden"), 4000);
-            }
-        </script>
+          <h2 class="text-2xl font-bold text-green-300 mb-3">🧠 Zenith Protocol</h2>
+          <textarea id="zenith-command-input" rows="4" class="w-full glass-input mb-4"
+            placeholder="Enter your protocol command here…"></textarea>
+          <button onclick="submitZenithCommand()" class="btn-glow-green w-full mb-4">🚀 Execute</button>
+
+          <div class="glass-card max-h-48 overflow-y-auto text-sm text-green-100" id="zenith-command-log">
+            <div class="mb-2 text-green-300">📝 Command Log:</div>
+            <ul id="zenith-log-list" class="space-y-1 list-disc list-inside text-green-200"></ul>
+          </div>
+        </div>
+      </div>
     </div>
+
+
+
+
 
   </div>
 
-  <!-- Scripts -->
-  <script>
-    function showTab(id) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab'));
-
-      document.getElementById(id).classList.remove('hidden');
-      event.target.classList.add('active-tab');
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle("bg-gray-900");
-      document.body.classList.toggle("bg-white");
-      document.body.classList.toggle("text-white");
-      document.body.classList.toggle("text-black");
-    }
-  </script>
+  <!-- Import main.js -->
+  <script src="js/main.js"></script> 
 
 </body>
 </html>
