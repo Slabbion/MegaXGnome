@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Slabbion Dashboards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    .tab-btn {
+      @apply relative z-10 px-5 py-2 font-semibold bg-gray-800 text-white rounded-t-md transition-all duration-300;
+      clip-path: polygon(0% 100%, 0% 20%, 10% 0%, 90% 0%, 100% 20%, 100% 100%);
+    }
+
+    .tab-btn:not(.active-tab) {
+      opacity: 0.7;
+      transform: translateY(8px);
+    }
+
+    .active-tab {
+      @apply bg-yellow-500 text-black z-20 shadow-lg;
+    }
+
+    .tab-content {
+      animation: slideIn 0.4s ease-in-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Accent themes */
+    .theme-orion h1 { @apply text-yellow-400; }
+    .theme-nova h1 { @apply text-blue-400; }
+    .theme-hex h1 { @apply text-indigo-400; }
+    .theme-solis h1 { @apply text-orange-400; }
+    .theme-vanta h1 { @apply text-purple-400; }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white transition-colors duration-500">
+
+  <!-- Tab Navigation -->
+  <div class="flex justify-center space-x-2 mt-6">
+    <button onclick="showTab('orion')" class="tab-btn active-tab">🛰️ Orion</button>
+    <button onclick="showTab('nova')" class="tab-btn">🌌 Nova</button>
+    <button onclick="showTab('hex')" class="tab-btn">💠 Hex</button>
+    <button onclick="showTab('solis')" class="tab-btn">☀️ Solis</button>
+    <button onclick="showTab('vanta')" class="tab-btn">🌑 Vanta</button>
+    <button onclick="toggleTheme()" class="ml-4 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">🌓 Toggle</button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="max-w-7xl mx-auto p-6">
+
+    <!-- ORION -->
+    <div id="orion" class="tab-content">
+      <h1 class="text-4xl font-extrabold mb-4 text-yellow-400">🛰️ Orion Dashboard</h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-gray-800 p-4 rounded shadow">
+          <div class="text-sm text-gray-400">Total Opps</div>
+          <div class="text-2xl font-bold text-green-400">{{ opp_count }}</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded shadow">
+          <div class="text-sm text-gray-400">Avg Profit Margin</div>
+          <div class="text-2xl font-bold text-blue-400">{{ avg_margin }}%</div>
+        </div>
+        <div class="bg-gray-800 p-4 rounded shadow">
+          <div class="text-sm text-gray-400">Max APY</div>
+          <div class="text-2xl font-bold text-yellow-400">{{ max_apy }}%</div>
+        </div>
+      </div>
+
+      <form method="get" class="mb-6 flex flex-wrap gap-3 items-center">
+        <select name="platform" class="bg-gray-800 text-white px-3 py-2 rounded">
+          <option value="">All Platforms</option>
+          {% for p in ["polymarket"] %}
+          <option value="{{ p }}" {% if selected_platform == p %}selected{% endif %}>{{ p|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="match" placeholder="Match" value="{{ match }}" class="px-3 py-2 bg-gray-800 text-white rounded" />
+        <input type="number" step="0.1" name="min_apy" placeholder="Min APY" value="{{ min_apy }}" class="px-3 py-2 bg-gray-800 text-white rounded" />
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Filter</button>
+      </form>
+
+      <form method="post" action="/toggle_mode" class="mb-4">
+        <button class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
+          Toggle to {{ 'Live' if mode == 'dry-run' else 'Dry-run' }}
+        </button>
+      </form>
+
+      <form id="scan-form" class="mb-6">
+        <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">🔄 Scan Markets</button>
+      </form>
+
+      <div class="bg-black text-green-400 font-mono p-4 rounded mb-6 max-h-64 overflow-y-auto text-sm" id="log-feed">
+        <div class="text-gray-400 mb-1">📟 Orion Logs:</div>
+      </div>
+
+      <div class="bg-gray-800 p-4 rounded mb-6">
+        <h2 class="text-lg font-bold mb-3">📊 APY Over Time</h2>
+        <canvas id="apyChart" height="100"></canvas>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm border border-gray-700">
+          <thead class="bg-gray-800 text-gray-300">
+            <tr>
+              <th class="px-3 py-2">Time</th>
+              <th class="px-3 py-2">Match</th>
+              <th class="px-3 py-2">Platform 1</th>
+              <th class="px-3 py-2">Platform 2</th>
+              <th class="px-3 py-2">Odds</th>
+              <th class="px-3 py-2">Profit %</th>
+              <th class="px-3 py-2">APY</th>
+            </tr>
+          </thead>
+          <tbody id="opportunities-table-body">
+            {% for opp in opportunities %}
+            <tr class="border-t border-gray-700 hover:bg-gray-800">
+              <td class="px-3 py-2">{{ opp.timestamp }}</td>
+              <td class="px-3 py-2">{{ opp.match }}</td>
+              <td class="px-3 py-2">{{ opp.platform1 }}</td>
+              <td class="px-3 py-2">{{ opp.platform2 }}</td>
+              <td class="px-3 py-2">{{ opp.odds1 }} / {{ opp.odds2 }}</td>
+              <td class="px-3 py-2 text-green-400 font-bold">{{ opp.profit_margin }}%</td>
+              <td class="px-3 py-2 text-yellow-300">{{ opp.apy }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NOVA -->
+    <div id="nova" class="tab-content hidden">
+        <h1 class="text-3xl font-bold text-blue-400 mb-4">🌌 Nova Dashboard</h1>
+        <p class="text-gray-400 mb-6 italic">Agent Nova logs everything: messages, price actions, command triggers, and anomalies. Designed to observe, record, and report without bias.</p>
+
+        <!-- Nova Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-gray-800/80 backdrop-blur-sm p-4 rounded shadow">
+            <div class="text-sm text-gray-400">Total Logs</div>
+            <div class="text-2xl font-bold text-blue-300">3,274</div>
+            </div>
+            <div class="bg-gray-800/80 backdrop-blur-sm p-4 rounded shadow">
+            <div class="text-sm text-gray-400">Anomalies Detected</div>
+            <div class="text-2xl font-bold text-red-400">17</div>
+            </div>
+            <div class="bg-gray-800/80 backdrop-blur-sm p-4 rounded shadow">
+            <div class="text-sm text-gray-400">Triggers Observed</div>
+            <div class="text-2xl font-bold text-teal-400">89</div>
+            </div>
+        </div>
+
+        <!-- Nova Logs Feed -->
+        <div class="bg-black bg-opacity-60 p-4 rounded mb-6 font-mono text-sm text-blue-300 max-h-64 overflow-y-auto shadow-inner border border-blue-800" id="nova-log-feed">
+            <div class="text-blue-500 mb-2">📘 Nova Log Stream:</div>
+            <ul class="space-y-1" id="nova-logs">
+            <li>[00:01:12] 🛰 Command received: `scan_all`</li>
+            <li>[00:01:14] ✅ Task completed. 21 entries recorded.</li>
+            <li>[00:01:18] ⚠️ Price deviation detected: Market ID #842</li>
+            <li>[00:01:21] 📦 Data packet synced to archive.</li>
+            <li>[00:01:30] 🌀 Anomaly pattern matched: Delta-Theta Curve</li>
+            </ul>
+        </div>
+
+        <!-- Nova Report Upload -->
+        <div class="bg-gray-800/70 p-4 rounded shadow">
+            <h2 class="text-lg font-semibold text-blue-200 mb-3">📤 Submit New Report</h2>
+            <form id="nova-report-form" class="flex flex-col gap-3">
+            <input type="text" placeholder="Log Title" class="bg-gray-900 px-3 py-2 rounded text-white placeholder-gray-500" />
+            <textarea placeholder="Describe anomaly, observation or trigger..." rows="4" class="bg-gray-900 px-3 py-2 rounded text-white placeholder-gray-500"></textarea>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HEX -->
+    <div id="hex" class="tab-content hidden">
+        <h1 class="text-3xl font-bold text-indigo-400 mb-4">💠 Hex Dashboard</h1>
+
+        <!-- Scan News Button -->
+        <button onclick="scanNews()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded transition mb-6">
+            🛰️ Scan Latest News
+        </button>
+
+        <!-- News Feed -->
+        <div id="news-feed" class="grid md:grid-cols-2 gap-4 mb-8">
+            <!-- News articles will populate here -->
+        </div>
+
+        <!-- Pinned Articles -->
+        <div class="bg-indigo-900/30 border border-indigo-400/20 backdrop-blur-md p-4 rounded-lg">
+            <h2 class="text-lg font-semibold text-indigo-300 mb-2">📌 Pinned Headlines</h2>
+            <ul id="pinned-articles" class="text-indigo-100 text-sm list-disc list-inside space-y-1 max-h-40 overflow-y-auto"></ul>
+        </div>
+
+        <!-- Hex Intelligence Script -->
+        <script>
+            const sampleNews = [
+            { title: "AI Beats Humans in New Math Challenge", category: "Tech" },
+            { title: "Markets Surge as Inflation Slows", category: "Finance" },
+            { title: "New Protests Erupt in Major City", category: "World" },
+            { title: "Quantum Breakthrough May Revolutionize Computing", category: "Science" },
+            { title: "Cybersecurity Threat Level Raised Globally", category: "Security" },
+            { title: "UN Holds Emergency Climate Talks", category: "Environment" },
+            { title: "Rare Planetary Alignment This Week", category: "Space" },
+            { title: "Massive Data Breach Hits Financial Firm", category: "Cyber" },
+            ];
+
+            function scanNews() {
+            const newsFeed = document.getElementById("news-feed");
+            newsFeed.innerHTML = ""; // Clear previous results
+
+            sampleNews.forEach((article, index) => {
+                const card = document.createElement("div");
+                card.className = "bg-indigo-800/30 border border-indigo-400/10 backdrop-blur-sm p-4 rounded-lg shadow transition hover:bg-indigo-800/50";
+                card.innerHTML = `
+                <h3 class="font-semibold text-indigo-100 mb-1">📰 ${article.title}</h3>
+                <p class="text-indigo-300 text-sm mb-2">Category: ${article.category}</p>
+                <button onclick="pinArticle('${article.title.replace(/'/g, "\\'")}')" 
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 rounded">
+                    📌 Pin
+                </button>
+                `;
+                newsFeed.appendChild(card);
+            });
+            }
+
+            function pinArticle(title) {
+            const list = document.getElementById("pinned-articles");
+            const item = document.createElement("li");
+            item.textContent = title;
+            list.appendChild(item);
+            }
+        </script>
+    </div>
+
+    <!-- SOLIS -->
+    <div id="solis" class="tab-content hidden">
+        <h1 class="text-3xl font-bold text-orange-400 mb-4">☀️ Solis Dashboard</h1>
+
+        <!-- Daily Quote -->
+        <div class="bg-gradient-to-br from-yellow-100/10 via-orange-200/10 to-transparent border border-orange-300/20 rounded-xl p-6 backdrop-blur-md shadow-md mb-6">
+            <h2 class="text-xl font-semibold text-orange-300 mb-2">📜 Today's Insight</h2>
+            <blockquote id="solis-quote" class="italic text-orange-100 text-lg">
+            “In the beginning was the Word… — John 1:1”
+            </blockquote>
+        </div>
+
+        <button onclick="getSolisQuote()" class="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded transition mb-6">
+            🔄 New Quote
+        </button>
+
+        <!-- Archives -->
+        <div class="bg-orange-900/20 backdrop-blur-sm border border-orange-500/30 p-4 rounded-lg mb-6">
+            <h3 class="text-lg font-semibold text-orange-300 mb-2">🧙‍♂️ Mystical Archives</h3>
+            <p class="text-orange-100 text-sm">
+            Future archive of sacred texts, filtered by theme or origin (Bible, Hermetic, Sufi, etc.).
+            </p>
+        </div>
+
+        <!-- Reflection Entry -->
+        <div class="bg-orange-900/20 backdrop-blur-sm border border-orange-500/30 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-orange-300 mb-2">✨ Daily Contemplation Log</h3>
+
+            <!-- Email Field -->
+            <input id="solis-email" type="email" class="w-full bg-orange-900/40 text-orange-100 p-3 rounded mb-3" placeholder="Enter your email to receive this reflection…" />
+
+            <!-- Textarea -->
+            <textarea id="solis-entry" rows="4" class="w-full bg-orange-900/40 text-orange-100 p-3 rounded mb-3"
+            placeholder="Write your reflection…"></textarea>
+
+            <button onclick="saveEntryAndEmail()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded transition">
+            💬 Send Reflection
+            </button>
+
+            <ul id="solis-entries" class="mt-4 list-disc list-inside text-orange-200 text-sm max-h-32 overflow-y-auto"></ul>
+        </div>
+
+        <script>
+            const solisQuotes = [
+                "“The light shines in the darkness…” — John 1:5",
+                "“To everything there is a season…” — Ecclesiastes 3:1",
+                "“As above, so below.” — Hermetic Texts",
+                "“Let there be light.” — Genesis 1:3",
+                "“He who knows others is wise…” — Lao Tzu",
+                "“You are the light of the world…” — Matthew 5:14",
+                "“The lips of wisdom are closed…” — The Kybalion",
+                "“With Him are wisdom and strength…” — Job 12:13",
+                "“Be still, and know that I am God.” — Psalm 46:10",
+                "“I am the Alpha and the Omega…” — Revelation 1:8"
+            ];
+
+            function getSolisQuote() {
+                fetch('https://type.fit/api/quotes')
+                .then(res => res.json())
+                .then(data => {
+                    const q = data[Math.floor(Math.random() * data.length)];
+                    document.getElementById("solis-quote").textContent = `“${q.text}” — ${q.author || 'Unknown'}`;
+                })
+                .catch(() => {
+                    const quote = solisQuotes[Math.floor(Math.random() * solisQuotes.length)];
+                    document.getElementById("solis-quote").textContent = quote;
+                });
+            }
+
+            function saveEntryAndEmail() {
+                const email = document.getElementById("solis-email").value.trim();
+                const text = document.getElementById("solis-entry").value.trim();
+                if (!text || !email) {
+                alert("Please enter both your reflection and email.");
+                return;
+                }
+
+                // Show in local UI
+                const list = document.getElementById("solis-entries");
+                const li = document.createElement("li");
+                li.textContent = text;
+                list.prepend(li);
+
+                // Reset input
+                document.getElementById("solis-entry").value = "";
+
+                // Send to backend email service
+                fetch("/send_solis_email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email, message: text })
+                })
+                .then(res => res.json())
+                .then(data => {
+                if (data.status === "success") {
+                    alert("🧡 Reflection sent to your inbox.");
+                } else {
+                    alert("⚠️ Failed to send. Please try again.");
+                }
+                })
+                .catch(err => {
+                console.error(err);
+                alert("⚠️ Server error. Try again later.");
+                });
+            }
+        </script>
+    </div>
+
+    <!-- VANTA -->
+    <div id="vanta" class="tab-content hidden">
+        <h1 class="text-3xl font-bold text-purple-400 mb-4">🌑 Vanta Dashboard</h1>
+
+        <!-- Whisper Box -->
+        <div class="bg-gradient-to-br from-purple-900/20 via-purple-800/10 to-transparent border border-purple-400/20 rounded-xl p-6 backdrop-blur-md shadow-md mb-6">
+            <h2 class="text-xl font-semibold text-purple-300 mb-2">💬 Whisper to Vanta</h2>
+            <textarea id="vanta-entry" rows="4" class="w-full bg-purple-950/40 text-purple-100 p-3 rounded mb-3"
+            placeholder="Speak your mind privately... (e.g. your thoughts, emotions, dreams, fears)"></textarea>
+            <input type="email" id="vanta-email" class="w-full bg-purple-950/40 text-purple-100 p-3 rounded mb-3"
+            placeholder="Optional: enter your email to receive this entry" />
+            <button onclick="saveVantaEntry()" class="bg-purple-700 hover:bg-purple-800 text-white font-semibold px-4 py-2 rounded transition">
+            🕊️ Submit Whisper
+            </button>
+            <p id="vanta-confirmation" class="mt-3 text-purple-300 text-sm hidden">🖤 Entry saved. You're not alone.</p>
+        </div>
+
+        <!-- Memory Vault -->
+        <div class="bg-purple-900/20 backdrop-blur-sm border border-purple-400/30 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-purple-300 mb-2">🧠 Private Memory Vault</h3>
+            <ul id="vanta-entries" class="list-disc list-inside text-purple-200 text-sm max-h-40 overflow-y-auto"></ul>
+        </div>
+
+        <!-- Vanta Script -->
+        <script>
+            function saveVantaEntry() {
+            const entry = document.getElementById("vanta-entry").value.trim();
+            const email = document.getElementById("vanta-email").value.trim();
+            const list = document.getElementById("vanta-entries");
+            const confirm = document.getElementById("vanta-confirmation");
+
+            if (!entry) return;
+
+            // Add entry to vault list
+            const li = document.createElement("li");
+            li.textContent = entry;
+            list.prepend(li);
+
+            // Reset form
+            document.getElementById("vanta-entry").value = "";
+            document.getElementById("vanta-email").value = "";
+
+            // Show confirmation
+            confirm.classList.remove("hidden");
+
+            // Optional: Email entry (backend must handle POST to /send_vanta_entry)
+            if (email) {
+                fetch("/send_vanta_entry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ entry: entry, email: email })
+                }).catch(console.error);
+            }
+
+            setTimeout(() => confirm.classList.add("hidden"), 4000);
+            }
+        </script>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+
+      document.getElementById(id).classList.remove('hidden');
+      event.target.classList.add('active-tab');
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("bg-gray-900");
+      document.body.classList.toggle("bg-white");
+      document.body.classList.toggle("text-white");
+      document.body.classList.toggle("text-black");
+    }
+  </script>
+
+</body>
+</html>
